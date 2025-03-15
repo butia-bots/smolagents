@@ -930,7 +930,7 @@ class LiteLLMModel(Model):
         api_base=None,
         api_key=None,
         custom_role_conversions: Optional[Dict[str, str]] = None,
-        flatten_messages_as_text: bool | None = None,
+        flatten_messages_as_text: Union[bool, None] = None,
         **kwargs,
     ):
         if not model_id:
@@ -1024,8 +1024,8 @@ class OpenAIServerModel(Model):
         model_id: str,
         api_base: Optional[str] = None,
         api_key: Optional[str] = None,
-        organization: Optional[str] | None = None,
-        project: Optional[str] | None = None,
+        organization: Union[Optional[str], None] = None,
+        project: Union[Optional[str], None] = None,
         client_kwargs: Optional[Dict[str, Any]] = None,
         custom_role_conversions: Optional[Dict[str, str]] = None,
         flatten_messages_as_text: bool = False,

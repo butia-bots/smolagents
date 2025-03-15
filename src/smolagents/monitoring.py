@@ -16,7 +16,7 @@
 # limitations under the License.
 import json
 from enum import IntEnum
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from rich import box
 from rich.console import Console, Group
@@ -88,7 +88,7 @@ class AgentLogger:
         self.level = level
         self.console = Console()
 
-    def log(self, *args, level: str | LogLevel = LogLevel.INFO, **kwargs) -> None:
+    def log(self, *args, level: Union[str, LogLevel] = LogLevel.INFO, **kwargs) -> None:
         """Logs a message to the console.
 
         Args:

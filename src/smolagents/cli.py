@@ -17,6 +17,8 @@
 import argparse
 import os
 
+from typing import Union, List
+
 from dotenv import load_dotenv
 
 from smolagents import CodeAgent, HfApiModel, LiteLLMModel, Model, OpenAIServerModel, Tool, TransformersModel
@@ -79,7 +81,7 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def load_model(model_type: str, model_id: str, api_base: str | None = None, api_key: str | None = None) -> Model:
+def load_model(model_type: str, model_id: str, api_base: Union[str, None] = None, api_key: Union[str, None] = None) -> Model:
     if model_type == "OpenAIServerModel":
         return OpenAIServerModel(
             api_key=api_key or os.getenv("FIREWORKS_API_KEY"),
@@ -105,12 +107,12 @@ def load_model(model_type: str, model_id: str, api_base: str | None = None, api_
 
 def main(
     prompt: str,
-    tools: list[str],
+    tools: List[str],
     model_type: str,
     model_id: str,
-    api_base: str | None = None,
-    api_key: str | None = None,
-    imports: list[str] | None = None,
+    api_base: Union[str, None] = None,
+    api_key: Union[str, None] = None,
+    imports: Union[List[str], None] = None,
 ) -> None:
     load_dotenv()
 

@@ -17,7 +17,7 @@ logger = getLogger(__name__)
 
 class Message(TypedDict):
     role: MessageRole
-    content: str | list[dict]
+    content: Union[str, List[dict]]
 
 
 @dataclass
@@ -48,17 +48,17 @@ class MemoryStep:
 
 @dataclass
 class ActionStep(MemoryStep):
-    model_input_messages: List[Message] | None = None
-    tool_calls: List[ToolCall] | None = None
-    start_time: float | None = None
-    end_time: float | None = None
-    step_number: int | None = None
-    error: AgentError | None = None
-    duration: float | None = None
+    model_input_messages: Union[List[Message], None] = None
+    tool_calls: Union[List[ToolCall], None] = None
+    start_time: Union[float, None] = None
+    end_time: Union[float, None] = None
+    step_number: Union[int, None] = None
+    error: Union[AgentError, None] = None
+    duration: Union[float, None] = None
     model_output_message: ChatMessage = None
-    model_output: str | None = None
-    observations: str | None = None
-    observations_images: List[str] | None = None
+    model_output: Union[str, None] = None
+    observations: Union[str, None] = None
+    observations_images: Union[List[str], None] = None
     action_output: Any = None
 
     def dict(self):
@@ -169,7 +169,7 @@ class PlanningStep(MemoryStep):
 @dataclass
 class TaskStep(MemoryStep):
     task: str
-    task_images: List[str] | None = None
+    task_images: Union[List[str], None] = None
 
     def to_messages(self, summary_mode: bool = False, **kwargs) -> List[Message]:
         content = [{"type": "text", "text": f"New task:\n{self.task}"}]
@@ -198,12 +198,12 @@ class AgentMemory:
     def reset(self):
         self.steps = []
 
-    def get_succinct_steps(self) -> list[dict]:
+    def get_succinct_steps(self) -> List[dict]:
         return [
             {key: value for key, value in step.dict().items() if key != "model_input_messages"} for step in self.steps
         ]
 
-    def get_full_steps(self) -> list[dict]:
+    def get_full_steps(self) -> List[dict]:
         return [step.dict() for step in self.steps]
 
     def replay(self, logger: AgentLogger, detailed: bool = False):

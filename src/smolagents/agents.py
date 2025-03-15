@@ -319,8 +319,8 @@ You have been provided with these additional arguments, that you can access usin
         return deque(self._run(task=self.task, max_steps=max_steps, images=images), maxlen=1)[0]
 
     def _run(
-        self, task: str, max_steps: int, images: List[str] | None = None
-    ) -> Generator[ActionStep | AgentType, None, None]:
+        self, task: str, max_steps: int, images: Union[List[str], None] = None
+    ) -> Generator[Union[ActionStep, AgentType], None, None]:
         final_answer = None
         self.step_number = 1
         while final_answer is None and self.step_number <= max_steps:
@@ -344,7 +344,7 @@ You have been provided with these additional arguments, that you can access usin
             yield memory_step
         yield handle_agent_output_types(final_answer)
 
-    def _create_memory_step(self, step_start_time: float, images: List[str] | None) -> ActionStep:
+    def _create_memory_step(self, step_start_time: float, images: Union[List[str], None]) -> ActionStep:
         return ActionStep(step_number=self.step_number, start_time=step_start_time, observations_images=images)
 
     def _execute_step(self, task: str, memory_step: ActionStep) -> Union[None, Any]:
@@ -557,7 +557,7 @@ You have been provided with these additional arguments, that you can access usin
             )
         return rationale.strip(), action.strip()
 
-    def provide_final_answer(self, task: str, images: Optional[list[str]]) -> str:
+    def provide_final_answer(self, task: str, images: Optional[List[str]]) -> str:
         """
         Provide the final answer to the task, based on the logs of the agent's interactions.
 
@@ -1183,20 +1183,19 @@ class CodeAgent(MultiStepAgent):
         self.python_executor = self.create_python_executor(executor_type, self.executor_kwargs)
 
     def create_python_executor(self, executor_type: str, kwargs: Dict[str, Any]) -> PythonExecutor:
-        match executor_type:
-            case "e2b" | "docker":
+            if executor_type in ["e2b", "docker"]:
                 if self.managed_agents:
                     raise Exception("Managed agents are not yet supported with remote code execution.")
                 if executor_type == "e2b":
                     return E2BExecutor(self.additional_authorized_imports, self.logger, **kwargs)
                 else:
                     return DockerExecutor(self.additional_authorized_imports, self.logger, **kwargs)
-            case "local":
+            elif executor_type == "local":
                 return LocalPythonExecutor(
                     self.additional_authorized_imports,
                     max_print_outputs_length=self.max_print_outputs_length,
                 )
-            case _:  # if applicable
+            else:  # if applicable
                 raise ValueError(f"Unsupported executor type: {executor_type}")
 
     def initialize_system_prompt(self) -> str:

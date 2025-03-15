@@ -372,7 +372,7 @@ _BASE_TYPE_MAPPING = {
     str: {"type": "string"},
     bool: {"type": "boolean"},
     Any: {"type": "any"},
-    types.NoneType: {"type": "null"},
+    None: {"type": "null"},
 }
 
 
